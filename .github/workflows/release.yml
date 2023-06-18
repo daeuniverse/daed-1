@@ -3,7 +3,8 @@ name: Release
 on:
   workflow_dispatch:
   push:
-    branches: [release-v*]
+    tags:
+      - "v*.*.*"
 
 jobs:
   checkout-full-src:
@@ -265,7 +266,6 @@ jobs:
           generate_release_notes: true
 
   upload-prerelease:
-    if: github.ref == 'refs/heads/main'
     needs: [checkout-full-src, build-bundle]
     runs-on: ubuntu-latest
     steps:
@@ -301,13 +301,13 @@ jobs:
         uses: 8Mi-Tech/delete-release-assets-action@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: Prerelease
+          tag: ${{ github.ref_name }}
           deleteOnlyFromDrafts: false
 
       - name: Upload Prerelease
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: Prerelease
+          tag_name: ${{ github.ref_name }}
           files: |
             *zip
             *pkg.tar.zst
