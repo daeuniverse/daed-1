@@ -3,9 +3,7 @@ name: Build
 on:
   workflow_dispatch:
   push:
-    branches: [main, release-v*]
-  release:
-    types: [prereleased]
+    branches: [main]
 
 jobs:
   checkout-full-src:
