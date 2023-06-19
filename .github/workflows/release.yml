@@ -1,11 +1,13 @@
-name: Release
+name: Publish Release
+run-name: Publish release ${{ inputs.tag }} by @${{ github.actor }}
+# ${{ github.ref }} replaced by ==> ${{ inputs.x }}; x is undetermined
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "v*.*.*"
-
+    inputs:
+      tag:
+        type: string
+        required: true
 jobs:
   checkout-full-src:
     runs-on: ubuntu-latest
@@ -129,7 +131,7 @@ jobs:
       - name: Get the version
         id: get_version
         env:
-          REF: ${{ github.ref }}
+          REF: ${{ inputs.tag }}
         run: |
           if [[ "$REF" == "refs/tags/v"* ]]; then
             tag=${REF##*/}
@@ -256,63 +258,11 @@ jobs:
       - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ inputs.tag }}
           files: |
             *zip
             *pkg.tar.zst
             *deb
             *rpm
             *dgst
-          generate_release_notes: true
-
-  upload-prerelease:
-    needs: [checkout-full-src, build-bundle]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v3
-        with:
-          path: release/
-
-      - name: Prepare files for upload
-        run: |
-          cp release/*/*.deb ./
-          cp release/*/*.rpm ./
-          cp release/*/*.pkg.tar.zst ./
-          cp release/*/*.zip ./
-          pushd release
-          zip -9vr ../web.zip web/*
-          for zip_file in $(ls | grep -E "^daed-linux*");do
-              pushd $zip_file
-              zip -9r ../../"$zip_file".zip ./*
-              popd
-          done
-          popd
-          for package in $(ls | grep -E ".deb|.pkg.tar.zst|.rpm|.zip");do
-              echo "$(md5sum $package)""  md5" >> $package.dgst
-              echo "$(shasum -a 1 $package)""  sha1" >> $package.dgst
-              echo "$(shasum -a 256 $package)""  sha256" >> $package.dgst
-              echo "$(shasum -a 512 $package)""  sha512" >> $package.dgst
-          done
-          echo "Show files are going to upload..."
-          ls -lh | grep -E ".deb|.pkg.tar.zst|.rpm|.zip"
-
-      - name: Delete current release assets
-        uses: 8Mi-Tech/delete-release-assets-action@main
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref_name }}
-          deleteOnlyFromDrafts: false
-
-      - name: Upload Prerelease
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref_name }}
-          files: |
-            *zip
-            *pkg.tar.zst
-            *deb
-            *rpm
-            *dgst
-          prerelease: true
           generate_release_notes: true
