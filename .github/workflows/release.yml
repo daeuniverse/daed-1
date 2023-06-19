@@ -133,17 +133,9 @@ jobs:
         env:
           REF: ${{ inputs.tag }}
         run: |
-          if [[ "$REF" == "refs/tags/v"* ]]; then
-            tag=${REF##*/}
-            version=${tag}
-            package_version="${tag:1}"
-          else
-            date=$(git log -1 --format="%cd" --date=short | sed s/-//g)
-            count=$(git rev-list --count HEAD)
-            commit=$(git rev-parse --short HEAD)
-            version="unstable-$date.r${count}.$commit"
-            package_version="$date.r${count}.$commit"
-          fi
+          tag=${REF}
+          version=${tag}
+          package_version="${tag:1}"
           echo "VERSION=$version" >> $GITHUB_OUTPUT
           echo "VERSION=$version" >> $GITHUB_ENV
           echo "PACKAGE_VERSION=$package_version" >> $GITHUB_OUTPUT
