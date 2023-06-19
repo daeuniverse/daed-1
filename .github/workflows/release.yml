@@ -223,7 +223,6 @@ jobs:
             installer-${{ steps.get_filename.outputs.BUNDLE_NAME }}.pkg.tar.zst
 
   upload-release:
-    if: github.event_name == 'release'
     needs: [checkout-full-src, build-bundle]
     runs-on: ubuntu-latest
     steps:
