@@ -4,6 +4,7 @@ import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 
+import { useRenameConfigMutation, useRenameDNSMutation, useRenameGroupMutation, useRenameRoutingMutation } from '~/apis'
 import { RuleType } from '~/constants'
 
 import { FormActions } from './FormActions'
@@ -28,34 +29,30 @@ export const RenameFormModal = forwardRef(
     {
       opened,
       onClose,
-      handleSubmit,
     }: {
       opened: boolean
       onClose: () => void
-      handleSubmit: (
-        type: RuleType | undefined,
-        id: string | undefined
-      ) => (values: z.infer<typeof schema>) => Promise<void>
     },
     ref
   ) => {
     const { t } = useTranslation()
 
     const [props, setProps] = useState<Props>({})
+    const { type, id } = props
 
     const ruleName = useMemo(() => {
-      if (props.type === RuleType.config) {
+      if (type === RuleType.config) {
         return t('config')
       }
 
-      if (props.type === RuleType.dns) {
+      if (type === RuleType.dns) {
         return t('dns')
       }
 
-      if (props.type === RuleType.routing) {
+      if (type === RuleType.routing) {
         return t('routing')
       }
-    }, [props.type])
+    }, [type, t])
 
     useImperativeHandle(ref, () => ({
       props,
@@ -69,18 +66,37 @@ export const RenameFormModal = forwardRef(
       },
     })
 
+    const renameConfigMutation = useRenameConfigMutation()
+    const renameDNSMutation = useRenameDNSMutation()
+    const renameRoutingMutation = useRenameRoutingMutation()
+    const renameGroupMutation = useRenameGroupMutation()
+
     return (
       <Modal title={t('actions.rename')} opened={opened} onClose={onClose}>
         <form
-          onSubmit={form.onSubmit((values) =>
-            handleSubmit(
-              props.type,
-              props.id
-            )(values).then(() => {
-              onClose()
-              form.reset()
-            })
-          )}
+          onSubmit={form.onSubmit((values) => {
+            const { name } = values
+
+            if (!type || !id) {
+              return
+            }
+
+            if (type === RuleType.config) {
+              renameConfigMutation.mutate({ id, name })
+            }
+
+            if (type === RuleType.dns) {
+              renameDNSMutation.mutate({ id, name })
+            }
+
+            if (type === RuleType.routing) {
+              renameRoutingMutation.mutate({ id, name })
+            }
+
+            if (type === RuleType.group) {
+              renameGroupMutation.mutate({ id, name })
+            }
+          })}
         >
           <Stack>
             <Title order={4}>{ruleName}</Title>
