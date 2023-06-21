@@ -13,9 +13,35 @@ curl --silent "https://api.github.com/repos/daeuniverse/daed/releases" | jq -r '
 ## Releases
 
 <!-- BEGIN NEW TOC ENTRY -->
+- [v0.1.0 (Latest)](#v010-latest)
 
 - [v0.1.0rc1 (Pre-release)](#v010rc1-pre-release)
 <!-- BEGIN NEW CHANGELOGS -->
+
+### v0.1.0 (Latest)
+
+> Release date: 2023/06/21
+
+
+[Full Changelog](https://github.com/daeuniverse/daed/compare/v0.1.0rc...v0.1.0)
+
+- fix: default googledns add tcp [\#92](https://github.com/daeuniverse/daed/pull/92) ([kunish](https://github.com/kunish))
+- chore\(sync\): keep upstream source up-to-date [\#90](https://github.com/daeuniverse/daed/pull/90) ([dae-bot[bot]](https://github.com/apps/dae-bot))
+- chore\(sync\): keep upstream source up-to-date [\#86](https://github.com/daeuniverse/daed/pull/86) ([dae-bot[bot]](https://github.com/apps/dae-bot))
+- refactor: split orchestrate page into multiple components [\#81](https://github.com/daeuniverse/daed/pull/81) ([kunish](https://github.com/kunish))
+- feat: restrict drag and drop area [\#80](https://github.com/daeuniverse/daed/pull/80) ([kunish](https://github.com/kunish))
+- feat: drag nodes and subscriptions between groups [\#79](https://github.com/daeuniverse/daed/pull/79) ([kunish](https://github.com/kunish))
+- fix\(subscription\): loading indicator of update [\#78](https://github.com/daeuniverse/daed/pull/78) ([kunish](https://github.com/kunish))
+- feat\(group\): show subscription tag on node hover [\#77](https://github.com/daeuniverse/daed/pull/77) ([kunish](https://github.com/kunish))
+- ci: add sync-upstream workflow [\#76](https://github.com/daeuniverse/daed/pull/76) ([yqlbu](https://github.com/yqlbu))
+- ci\(prerelease\): include v\*.\*.\*rc\* \(v0.1.1rc1\) case [\#75](https://github.com/daeuniverse/daed/pull/75) ([yqlbu](https://github.com/yqlbu))
+- ci\(release\): retrieve release tag \(version\) from dispatch inputs [\#74](https://github.com/daeuniverse/daed/pull/74) ([yqlbu](https://github.com/yqlbu))
+- fix\(config\): disable allow insecure by default [\#73](https://github.com/daeuniverse/daed/pull/73) ([kunish](https://github.com/kunish))
+- feat\(config\): show interface ip addresses in interface select [\#72](https://github.com/daeuniverse/daed/pull/72) ([kunish](https://github.com/kunish))
+- feat: add description text for group policies [\#71](https://github.com/daeuniverse/daed/pull/71) ([kunish](https://github.com/kunish))
+- feat: add loading state indicators [\#70](https://github.com/daeuniverse/daed/pull/70) ([kunish](https://github.com/kunish))
+- chore\(issue-template\): update default labels for bug-report [\#69](https://github.com/daeuniverse/daed/pull/69) ([yqlbu](https://github.com/yqlbu))
+- ci\(build-nightly\): add fetch-depth: 0 [\#67](https://github.com/daeuniverse/daed/pull/67) ([kunish](https://github.com/kunish))
 
 ### v0.1.0rc1 (Pre-release)
 
