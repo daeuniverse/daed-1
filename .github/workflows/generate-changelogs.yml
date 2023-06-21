@@ -1,33 +1,58 @@
 name: Generate Changelogs
-run-name: 'chore(release): generate changelogs for v0.1.0..v0.1.0rc'
+run-name: 'chore(release): generate changelogs for ${{ inputs.previous_release_tag }}..${{ inputs.future_release_tag }}'
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - generate-changelogs
-    # tags:
+    inputs:
+      previous_release_tag:
+        required: true
+        description: previous release tag
+      future_release_tag:
+        required: true
+        description: future release tag
 
 jobs:
   build:
-    name: Create Release
+    name: Generate changelogs
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - run: |
-          git fetch --prune --unshallow --tags
-
-      - name: '✏️ Generate release changelog'
-        uses: heinrichreimer/github-changelog-generator-action@v2.3
-        id: gen-changelog
+      - name: Generate release changelogs
+        uses: daeuniverse/action-github-changelog-generator@master
+        id: changelog
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # https://github.com/heinrichreimer/action-github-changelog-generator
+          token: ${{ github.token }}
+          issues: false
           pullRequests: true
           simpleList: true
-          since-tag: v0.1.0rc
+          compareLink: true
+          stripHeaders: true
+          stripGeneratorNotice: true
+          releaseBranch: main
+          sinceTag: ${{ inputs.previous_release_tag }}
+          futureRelease: v0.1.0
 
-      - name: Print result
+      - name: Print outputs
+        shell: bash
+        id: formatter
         run: |
-          echo "${{ steps.gen-changelog.outputs.changelog }}"
+          echo "${{ env.CONTENT }}"
+
+      - name: Create an issue with proposed changelogs
+        uses: dacbd/create-issue-action@main
+        with:
+          token: ${{ github.token }}
+          title: '[Release Changelogs] v0.1.0'
+          labels: automated-issue,release
+          assignees: daebot
+          body: |
+            ## Context
+
+            🚀 @daebot proposed the following changelogs for release v0.1.0 generated in [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+
+            ## Changelogs
+
+            <!-- BEGIN CHANGELOGS -->
+            ${{ env.CONTENT }}
