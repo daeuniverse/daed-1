@@ -15,40 +15,18 @@ jobs:
   build:
     name: Generate changelogs
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
       - uses: actions/checkout@v3
 
-      - name: Generate release changelogs
-        uses: daeuniverse/action-github-changelog-generator@master
-        id: changelog
+      - uses: actions/setup-node@v3
         with:
-          # https://github.com/heinrichreimer/action-github-changelog-generator
-          token: ${{ github.token }}
-          issues: false
-          pullRequests: true
-          simpleList: true
-          compareLink: true
-          stripHeaders: true
-          stripGeneratorNotice: true
-          releaseBranch: main
-          sinceTag: ${{ inputs.previous_release_tag }}
-          futureRelease: v0.1.0
+          node-version: latest
 
-      - name: Print outputs
-        shell: bash
-        id: formatter
-        run: |
-          echo "${{ env.CONTENT }}"
-      - name: Create an issue with proposed changelogs
-        uses: dacbd/create-issue-action@main
-        with:
-          token: ${{ github.token }}
-          title: '[Release Changelogs] v0.1.0'
-          labels: automated-issue,release
-          assignees: daebot
-          body: |
-            ## Context
-            🚀 @daebot proposed the following changelogs for release v0.1.0 generated in [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
-            ## Changelogs
-            <!-- BEGIN CHANGELOGS -->
-            ${{ env.CONTENT }}
+      - run: node scripts/generate-changelog.mjs
+        env:
+          PREVIOUS_TAG: ${{ inputs.previous_release_tag }}
+          FUTURE_TAG: ${{ inputs.future_release_tag }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.run_id }}
