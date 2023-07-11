@@ -219,6 +219,7 @@ jobs:
           
   report:
     if: always()
+    needs: [build-bundle]
     uses: daeuniverse/ci-seed-jobs/.github/workflows/report-build-result.yml@report_build_result
     with:
       checkrun_name: "PR Build (Preview)/build-bundle-check"
