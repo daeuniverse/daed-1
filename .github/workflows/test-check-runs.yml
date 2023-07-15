@@ -28,19 +28,8 @@ jobs:
           private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
           id: "dae-bot[bot]/${{ matrix.id }}"
           
-  build:
-    needs: [instantiate-check-runs]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        id: ["checkout-full-src", "build-web", "build-bundle"]
-    steps:
-      - uses: actions/checkout@master
-        id: checkout
-
-      - name: Report result
-        uses: daeuniverse/ci-seed-jobs/core/daed/report-check-run@master
-        with:
-          app_id: ${{ secrets.GH_APP_ID }}
-          private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-          id: "dae-bot[bot]/${{ matrix.id }}"
+  report:
+    uses: daeuniverse/ci-seed-jobs/.github/workflows/test-report-workflow-run.yml@master
+    with:
+      id: "dae-bot[bot]/${{ matrix.id }}"
+      conclusion: "${{ needs.instantiate-check-runs.result }}"
